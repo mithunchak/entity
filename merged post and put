@@ -1,0 +1,54 @@
+    public Stock buyStock(Stock incoming) {
+
+        // Case 1: Stock already exists → accumulate
+        if (repo.existsBySymbol(incoming.getSymbol())) {
+
+            Stock existing = repo.findBySymbol(incoming.getSymbol())
+                    .orElseThrow(() -> new RuntimeException("Stock not found"));
+
+            int oldQty = existing.getQuantity();
+            int newQty = incoming.getQuantity();
+
+            double totalCost =
+                    existing.getBuyPrice().doubleValue() * oldQty +
+                    incoming.getBuyPrice().doubleValue() * newQty;
+
+            int updatedQty = oldQty + newQty;
+            double avgPrice = totalCost / updatedQty;
+
+            existing.setQuantity(updatedQty);
+            existing.setBuyPrice(BigDecimal.valueOf(avgPrice));
+
+            return repo.save(existing);
+        }
+
+        // Case 2: First time buy → create new row
+        return repo.save(incoming);
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        @PostMapping("/")
+    public ResponseEntity<Stock> buyStock(@RequestBody Stock stock) {
+
+        if (stock == null ||
+            stock.getSymbol() == null || stock.getSymbol().isBlank() ||
+            stock.getQuantity() == null || stock.getQuantity() <= 0 ||
+            stock.getBuyPrice() == null) {
+            throw new RuntimeException("Invalid stock details");
+        }
+
+        Stock result = service.buyStock(stock);
+        return ResponseEntity.status(HttpStatus.CREATED).body(result);
+    }
