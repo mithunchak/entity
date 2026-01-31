@@ -1,0 +1,12 @@
+@PutMapping("/{id}/buy")
+public ResponseEntity<Stock> buyMoreStock(
+        @PathVariable Long id,
+        @RequestBody Stock stock) {
+
+    if (stock.getQuantity() == null || stock.getBuyPrice() == null) {
+        throw new RuntimeException("Quantity and buy price are required");
+    }
+
+    Stock updatedStock = service.buyMore(id, stock);
+    return ResponseEntity.ok(updatedStock);
+}
