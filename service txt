@@ -1,0 +1,36 @@
+package com.example.portfolio.service;
+
+import com.example.portfolio.entity.Stock;
+import com.example.portfolio.repository.StockRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+
+@Service
+public class StockService {
+
+    @Autowired
+    private StockRepository repo;
+
+    public Stock save(Stock stock) {
+        return repo.save(stock);
+    }
+
+    public List<Stock> getAllStocks() {
+        return repo.findAll();
+    }
+
+    public Stock getStockById(Long id) {
+        return repo.findById(id)
+                .orElseThrow(() -> new RuntimeException("Stock Not Found"));
+    }
+
+    public void deleteStock(Long id) {
+        repo.deleteById(id);
+    }
+
+    public boolean symbolExists(String symbol) {
+        return repo.existsBySymbol(symbol);
+    }
+}
