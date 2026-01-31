@@ -1,0 +1,68 @@
+package com.example.portfolio.controller;
+
+import com.example.portfolio.entity.Stock;
+import com.example.portfolio.service.StockService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+@RestController
+@RequestMapping("/api/v1/stocks")
+public class StockController {
+
+    @Autowired
+    private StockService service;
+
+    // BUY STOCK
+    @PostMapping("/")
+    public ResponseEntity<Stock> buyStock(@RequestBody Stock stock) {
+
+        if (stock == null ||
+            stock.getSymbol() == null || stock.getSymbol().isBlank() ||
+            stock.getCompanyName() == null || stock.getCompanyName().isBlank() ||
+            stock.getQuantity() == null || stock.getQuantity() <= 0 ||
+            stock.getBuyPrice() == null) {
+            throw new RuntimeException("Invalid stock details provided");
+        }
+
+        if (service.symbolExists(stock.getSymbol())) {
+            throw new RuntimeException("Stock already exists: " + stock.getSymbol());
+        }
+
+        Stock savedStock = service.save(stock);
+        return ResponseEntity.status(HttpStatus.CREATED).body(savedStock);
+    }
+
+    // VIEW PORTFOLIO
+    @GetMapping("/")
+    public ResponseEntity<List<Stock>> viewPortfolio() {
+        return ResponseEntity.ok(service.getAllStocks());
+    }
+
+    // GET STOCK BY ID
+    @GetMapping("/{id}")
+    public ResponseEntity<Stock> getStockById(@PathVariable Long id) {
+        return ResponseEntity.ok(service.getStockById(id));
+    }
+
+    // UPDATE STOCK
+    @PutMapping("/{id}")
+    public ResponseEntity<Stock> updateStock(
+            @PathVariable Long id,
+            @RequestBody Stock stock) {
+
+        stock.setId(id);
+        Stock updatedStock = service.save(stock);
+        return ResponseEntity.ok(updatedStock);
+    }
+
+    // SELL STOCK
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> sellStock(@PathVariable Long id) {
+        service.deleteStock(id);
+        return ResponseEntity.noContent().build();
+    }
+}
