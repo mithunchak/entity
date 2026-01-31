@@ -1,0 +1,24 @@
+public Stock buyMore(Long id, Stock incomingStock) {
+
+    Stock existing = getStockById(id);
+
+    int oldQty = existing.getQuantity();
+    int newQty = incomingStock.getQuantity();
+
+    if (newQty <= 0) {
+        throw new RuntimeException("Quantity must be greater than zero");
+    }
+
+    // Weighted average price
+    double totalCost =
+            existing.getBuyPrice().doubleValue() * oldQty +
+            incomingStock.getBuyPrice().doubleValue() * newQty;
+
+    int updatedQty = oldQty + newQty;
+    double avgPrice = totalCost / updatedQty;
+
+    existing.setQuantity(updatedQty);
+    existing.setBuyPrice(BigDecimal.valueOf(avgPrice));
+
+    return repo.save(existing);
+}
