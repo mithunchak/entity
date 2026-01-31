@@ -1,0 +1,30 @@
+{
+  "symbol": "AAPL",
+  "companyName": "Apple Inc",
+  "quantity": 10,
+  "buyPrice": 185.50
+}
+{
+  "symbol": "TSLA",
+  "companyName": "Tesla Inc",
+  "quantity": 5,
+  "buyPrice": 248.75
+}
+{
+  "symbol": "GOOGL",
+  "companyName": "Alphabet Inc",
+  "quantity": 8,
+  "buyPrice": 141.20
+}
+{
+  "symbol": "AMZN",
+  "companyName": "Amazon.com Inc",
+  "quantity": 12,
+  "buyPrice": 155.90
+}
+{
+  "symbol": "MSFT",
+  "companyName": "Microsoft Corporation",
+  "quantity": 6,
+  "buyPrice": 392.40
+}
