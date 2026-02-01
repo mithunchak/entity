@@ -1,0 +1,29 @@
+@Service
+public class MarketService {
+
+    @Value("${alphavantage.api.key}")
+    private String apiKey;
+
+    @Value("${alphavantage.base.url}")
+    private String baseUrl;
+
+    private final RestTemplate restTemplate = new RestTemplate();
+
+    // cache for demo stability
+    private Map<String, Object> cachedResponse;
+
+    public Map<String, Object> getMarketData() {
+
+        if (cachedResponse != null) {
+            return cachedResponse;
+        }
+
+        String url = UriComponentsBuilder.fromHttpUrl(baseUrl)
+                .queryParam("function", "TOP_GAINERS_LOSERS")
+                .queryParam("apikey", apiKey)
+                .toUriString();
+
+        cachedResponse = restTemplate.getForObject(url, Map.class);
+        return cachedResponse;
+    }
+}
