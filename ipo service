@@ -1,0 +1,68 @@
+@Value("${ipoalerts.api.key}")
+private String ipoApiKey;
+
+private final RestTemplate restTemplate = new RestTemplate();
+
+private HttpHeaders createIPOHeaders() {
+    HttpHeaders headers = new HttpHeaders();
+    headers.set("x-api-key", ipoApiKey);
+    return headers;
+}
+
+public Map<String, Object> getIPOs(String status, String type, int page, int limit) {
+
+    String url = "https://api.ipoalerts.in/ipos?page=" + page + "&limit=" + limit;
+
+    if (status != null)
+        url += "&status=" + status;
+
+    if (type != null)
+        url += "&type=" + type;
+
+    HttpEntity<String> entity = new HttpEntity<>(createIPOHeaders());
+
+    ResponseEntity<Map> response =
+            restTemplate.exchange(url, HttpMethod.GET, entity, Map.class);
+
+    return response.getBody();
+}
+
+public Map<String, Object> getIPODetails(String identifier) {
+
+    String url = "https://api.ipoalerts.in/ipos/" + identifier;
+
+    HttpEntity<String> entity = new HttpEntity<>(createIPOHeaders());
+
+    ResponseEntity<Map> response =
+            restTemplate.exchange(url, HttpMethod.GET, entity, Map.class);
+
+    return response.getBody();
+}
+
+
+
+
+
+
+
+--stock COntroller------------------------------
+@GetMapping("/ipos")
+public Map<String, Object> getIPOs(
+        @RequestParam(required = false) String status,
+        @RequestParam(required = false) String type,
+        @RequestParam(defaultValue = "1") int page,
+        @RequestParam(defaultValue = "10") int limit) {
+
+    return service.getIPOs(status, type, page, limit);
+}
+
+@GetMapping("/ipos/{identifier}")
+public Map<String, Object> getIPO(@PathVariable String identifier) {
+    return service.getIPODetails(identifier);
+}
+-------------------------------------------------------------------------
+
+
+------------------application Properties--------------------------------------
+
+ipoalerts.api.key=768e0b79502ba98201d4a2ffb31a3f6c5eee4d26a98075b084dae585a37802a0
